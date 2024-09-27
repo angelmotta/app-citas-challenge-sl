@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 const RequestCitaForm = () => {
+    const REST_API_CITAS = "http://localhost:3000/citas";
     const [tipoDocumento, setTipoDocumento] = useState("DNI");
     const [numDocumento, setNumDocumento] = useState("");
     const [nombreCompleto, setNombreCompleto] = useState("");
@@ -32,7 +33,6 @@ const RequestCitaForm = () => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // setIsFormOk(true);
         // Quick Form validation
         if (
             !tipoDocumento ||
@@ -44,6 +44,10 @@ const RequestCitaForm = () => {
             alert("Formulario incompleto");
             return;
         }
+
+        // Form is valid
+        // Save a reference to the form element before execute http request in async function
+        const formReference = e.currentTarget;
         const requestCita = {
             tipoDocumento,
             numDocumento,
@@ -54,13 +58,33 @@ const RequestCitaForm = () => {
         console.log(`Request cita:`);
         console.log(requestCita);
 
-        // Clean state
-        setTipoDocumento("DNI");
-        setNumDocumento("");
-        setNombreCompleto("");
-        setEspecialidad("medicina general");
-        // Clean data from html elements from form
-        e.currentTarget.reset();
+        // Send requestCita to backend API
+        const sendRequest = async () => {
+            const response = await fetch(REST_API_CITAS, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestCita),
+            });
+
+            // check if response is HTTP status 200
+            if (!response.ok) {
+                console.log("Error al crear la cita");
+                alert("Error al crear la cita");
+                return;
+            }
+            alert("Cita creada correctamente");
+            // Clean state
+            setTipoDocumento("DNI");
+            setNumDocumento("");
+            setNombreCompleto("");
+            setEspecialidad("medicina general");
+            // Clean data from form html elements
+            formReference.reset();
+        };
+
+        sendRequest();
     };
     return (
         <form onSubmit={handleSubmit}>

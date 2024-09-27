@@ -1,0 +1,28 @@
+{
+  "citas": [
+    {
+      "id": "6e8d",
+      "tipoDocumento": "DNI",
+      "numDocumento": "42685987",
+      "nombreCompleto": "Angel Motta",
+      "especialidad": "cardiología",
+      "fechaHora": "2024-09-27T23:35:57.944Z"
+    },
+    {
+      "id": "b73a",
+      "tipoDocumento": "DNI",
+      "numDocumento": "42685987",
+      "nombreCompleto": "Angel Motta",
+      "especialidad": "medicina general",
+      "fechaHora": "2024-09-27T23:39:02.021Z"
+    },
+    {
+      "id": "8253",
+      "tipoDocumento": "DNI",
+      "numDocumento": "42685987",
+      "nombreCompleto": "Angel Motta",
+      "especialidad": "medicina general",
+      "fechaHora": "2024-09-27T23:46:10.155Z"
+    }
+  ]
+}
