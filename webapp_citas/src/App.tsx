@@ -10,7 +10,9 @@ function App() {
     }, []);
 
     const fetchCitas = async () => {
-        const response = await fetch("http://localhost:3000/citas");
+        console.log(`Fetching citas...`);
+        const REST_API_CITAS = "http://localhost:3000/citas";
+        const response = await fetch(REST_API_CITAS);
         // check if response is 200
         if (!response.ok) {
             // handle error
@@ -27,7 +29,7 @@ function App() {
         <>
             <div>
                 <h1>Registro citas</h1>
-                <RequestCitaForm />
+                <RequestCitaForm fetchCitas={fetchCitas} />
             </div>
             <div>
                 <h2>Lista de citas</h2>

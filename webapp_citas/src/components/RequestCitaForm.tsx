@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-const RequestCitaForm = () => {
+const RequestCitaForm = (props: any) => {
+    const { fetchCitas } = props;
     const REST_API_CITAS = "http://localhost:3000/citas";
     const [tipoDocumento, setTipoDocumento] = useState("DNI");
     const [numDocumento, setNumDocumento] = useState("");
@@ -82,6 +83,9 @@ const RequestCitaForm = () => {
             setEspecialidad("medicina general");
             // Clean data from form html elements
             formReference.reset();
+
+            // Update list of citas
+            fetchCitas();
         };
 
         sendRequest();
