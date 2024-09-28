@@ -2,7 +2,7 @@
 
 ## Aplicación Frontend
 
-Se imeplementaron los siguientes casos:
+Se implementaron los siguientes casos:
 
 -   POST: creación de cita
 -   GET: recuperar las citas
