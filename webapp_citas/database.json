@@ -31,6 +31,14 @@
       "nombreCompleto": "Angel Motta",
       "especialidad": "pediatría",
       "fechaHora": "2024-09-28T00:17:09.929Z"
+    },
+    {
+      "id": "d9be",
+      "tipoDocumento": "DNI",
+      "numDocumento": "42685987",
+      "nombreCompleto": "Angel Motta",
+      "especialidad": "medicina general",
+      "fechaHora": "2024-09-28T00:35:02.947Z"
     }
   ]
 }

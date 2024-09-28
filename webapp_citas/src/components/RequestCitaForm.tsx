@@ -1,4 +1,11 @@
 import { useState } from "react";
+class ApiError extends Error {
+    code: number;
+    constructor(message: string, code: number) {
+        super(message);
+        this.code = code;
+    }
+}
 
 const RequestCitaForm = (props: any) => {
     const { fetchCitas } = props;
@@ -61,31 +68,41 @@ const RequestCitaForm = (props: any) => {
 
         // Send requestCita to backend API
         const sendRequest = async () => {
-            const response = await fetch(REST_API_CITAS, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(requestCita),
-            });
+            try {
+                const response = await fetch(REST_API_CITAS, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestCita),
+                });
 
-            // check if response is HTTP status 200
-            if (!response.ok) {
-                console.log("Error al crear la cita");
-                alert("Error al crear la cita");
-                return;
+                // check if response is HTTP status 200
+                if (!response.ok) {
+                    console.log("Error al crear la cita");
+                    throw new ApiError(
+                        "Error al crear la cita",
+                        response.status
+                    );
+                }
+                // Clean state
+                setTipoDocumento("DNI");
+                setNumDocumento("");
+                setNombreCompleto("");
+                setEspecialidad("medicina general");
+                // Clean data from form html elements
+                formReference.reset();
+
+                // Update list of citas
+                fetchCitas();
+                alert("Cita creada correctamente");
+            } catch (err) {
+                // custom error handling
+                if (err instanceof ApiError) {
+                    alert("Error al crear la cita");
+                }
+                alert("Servicio de citas no disponible");
             }
-            alert("Cita creada correctamente");
-            // Clean state
-            setTipoDocumento("DNI");
-            setNumDocumento("");
-            setNombreCompleto("");
-            setEspecialidad("medicina general");
-            // Clean data from form html elements
-            formReference.reset();
-
-            // Update list of citas
-            fetchCitas();
         };
 
         sendRequest();
