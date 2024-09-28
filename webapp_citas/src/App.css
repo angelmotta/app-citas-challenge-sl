@@ -14,4 +14,9 @@
 /* Align each column of my table */
 td {
     text-align: center;
+    padding: 0.5rem;
+}
+
+.container-list-citas {
+    margin-top: 50px;
 }

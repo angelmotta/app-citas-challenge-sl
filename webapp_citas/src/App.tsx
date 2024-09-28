@@ -31,7 +31,7 @@ function App() {
                 <h1>Registro citas</h1>
                 <RequestCitaForm fetchCitas={fetchCitas} />
             </div>
-            <div>
+            <div className="container-list-citas">
                 <h2>Lista de citas</h2>
                 <table>
                     <thead>
@@ -40,6 +40,8 @@ function App() {
                             <th>Tipo Documento</th>
                             <th>Numero Documento</th>
                             <th>Especialidad</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,6 +51,10 @@ function App() {
                                 <td>{cita.tipoDocumento}</td>
                                 <td>{cita.numDocumento}</td>
                                 <td>{cita.especialidad}</td>
+                                <td>{cita.fechaHora.split("T")[0]}</td>
+                                <td>
+                                    {cita.fechaHora.split("T")[1].split(".")[0]}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
