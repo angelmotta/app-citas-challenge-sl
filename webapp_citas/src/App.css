@@ -10,3 +10,8 @@
     flex-direction: column;
     gap: 0.5rem;
 }
+
+/* Align each column of my table */
+td {
+    text-align: center;
+}
