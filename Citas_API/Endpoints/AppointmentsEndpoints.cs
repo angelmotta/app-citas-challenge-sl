@@ -1,4 +1,7 @@
+using Citas_API.Data;
 using Citas_API.Dtos;
+using Citas_API.Entities;
+using Citas_API.Mappers;
 
 namespace Citas_API.Endpoints;
 
@@ -28,18 +31,21 @@ public static class AppointmentsEndpoints
             return Results.Ok(listRequestsAppointment[id]);
         }).WithName(GetInfoCitaEndpoint);
 
-        routerGroup.MapPost("/", (RequestAppointmentDTO reqAppointment) => {
-            AppointmentDTO newAppointment = new AppointmentDTO(
-                reqAppointment.DocIdType,
-                reqAppointment.NumDocId,
-                reqAppointment.FullName,
-                reqAppointment.Specialty,
-                DateTimeOffset.Now
-            );
-            // Store new Appointment
-            listRequestsAppointment.Add(newAppointment);
+        routerGroup.MapPost("/", (RequestAppointmentDTO reqAppointment, AppStoreContext dbContext) => {
+            Specialty? specialtyRequested = dbContext.Specialties.Find(reqAppointment.SpecialtyId);
+            if (specialtyRequested == null)
+            {
+                return Results.BadRequest("Specialty not found");
+            }
 
-            return Results.CreatedAtRoute(GetInfoCitaEndpoint, new {id = listRequestsAppointment.Count - 1}, newAppointment);
+            Appointment newAppointment = reqAppointment.ToEntity(specialtyRequested.Id);
+            
+            dbContext.Appointments.Add(newAppointment);
+            dbContext.SaveChanges();
+
+            CreatedAppointmentDTO createdAppointmentResponse = newAppointment.ToDTO(specialtyRequested.Name);
+
+            return Results.CreatedAtRoute(GetInfoCitaEndpoint, new {id = newAppointment}, createdAppointmentResponse);
         });
 
         routerGroup.MapPut("/{id}", (int id, RequestUpdateAppointmentDTO reqUpdateAppointment) => {
