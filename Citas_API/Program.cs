@@ -9,5 +9,6 @@ builder.Services.AddSqlite<AppStoreContext>(dbConnString);
 var app = builder.Build();
 
 app.MapAppointmentsEndpoints();
+app.MigrateDb();
 
 app.Run();
