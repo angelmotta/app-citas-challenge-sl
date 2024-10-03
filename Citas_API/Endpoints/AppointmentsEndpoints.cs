@@ -13,7 +13,7 @@ public static class AppointmentsEndpoints
 
     public static RouteGroupBuilder MapAppointmentsEndpoints(this WebApplication app) {
         
-        var routerGroup = app.MapGroup("/citas");
+        var routerGroup = app.MapGroup("/citas").WithParameterValidation();
 
         routerGroup.MapGet("/", () => {
             return listRequestsAppointment;
@@ -29,9 +29,6 @@ public static class AppointmentsEndpoints
         }).WithName(GetInfoCitaEndpoint);
 
         routerGroup.MapPost("/", (RequestAppointmentDTO reqAppointment) => {
-            // TODO: validate DTO
-            
-            // TODO: Create full appointment (date and time)
             AppointmentDTO newAppointment = new AppointmentDTO(
                 reqAppointment.DocIdType,
                 reqAppointment.NumDocId,
