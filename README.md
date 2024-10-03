@@ -2,14 +2,14 @@
 
 ## Aplicación Frontend
 
-Se imeplementaron los siguientes casos:
+Se implementaron los siguientes casos:
 
 -   POST: creación de cita
 -   GET: recuperar las citas
 
 ![WebApp](imgs/webapp_general.png)
 
-Observaciones
+Control y manejo de errores
 
 -   Se implementó el manejo de errores en solicitudes HTTP
 -   Se implementó una clase custom para la captura de errores
