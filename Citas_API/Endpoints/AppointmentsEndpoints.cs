@@ -11,13 +11,15 @@ public static class AppointmentsEndpoints
         new ("DNI", "62685123", "Mayra Chávez", "General", DateTimeOffset.Parse("2024-10-02 16:30:00 -05:00")),
     ];
 
-    public static WebApplication MapAppointmentsEndpoints(this WebApplication app) {
+    public static RouteGroupBuilder MapAppointmentsEndpoints(this WebApplication app) {
         
-        app.MapGet("/citas", () => {
+        var routerGroup = app.MapGroup("/citas");
+
+        routerGroup.MapGet("/", () => {
             return listRequestsAppointment;
         });
 
-        app.MapGet("/citas/{id}", (int id) => {
+        routerGroup.MapGet("/{id}", (int id) => {
             int lenList = listRequestsAppointment.Count;
             if (id > lenList - 1) {
                 return Results.NotFound();
@@ -26,7 +28,7 @@ public static class AppointmentsEndpoints
             return Results.Ok(listRequestsAppointment[id]);
         }).WithName(GetInfoCitaEndpoint);
 
-        app.MapPost("/citas", (RequestAppointmentDTO reqAppointment) => {
+        routerGroup.MapPost("/", (RequestAppointmentDTO reqAppointment) => {
             // TODO: validate DTO
             
             // TODO: Create full appointment (date and time)
@@ -43,7 +45,7 @@ public static class AppointmentsEndpoints
             return Results.CreatedAtRoute(GetInfoCitaEndpoint, new {id = listRequestsAppointment.Count - 1}, newAppointment);
         });
 
-        app.MapPut("/citas/{id}", (int id, RequestUpdateAppointmentDTO reqUpdateAppointment) => {
+        routerGroup.MapPut("/{id}", (int id, RequestUpdateAppointmentDTO reqUpdateAppointment) => {
             int lenList = listRequestsAppointment.Count;
             if (id > lenList - 1) {
                 return Results.NotFound();
@@ -63,7 +65,7 @@ public static class AppointmentsEndpoints
             return Results.NoContent();
         });
 
-        app.MapDelete("/citas/{id}", (int id) => {
+        routerGroup.MapDelete("/{id}", (int id) => {
             int lenList = listRequestsAppointment.Count;
             if (id > lenList - 1) {
                 return Results.NotFound();
@@ -75,6 +77,6 @@ public static class AppointmentsEndpoints
         });
 
 
-        return app;
+        return routerGroup;
     }
 }
