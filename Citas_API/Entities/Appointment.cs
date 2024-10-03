@@ -14,7 +14,7 @@ public class Appointment
 
     public int SpecialtyId { get; set; }
 
-    public Specialty? SpecialtyAppointment { get; set; }
+    public required Specialty SpecialtyAppointment { get; set; }
 
     public DateTimeOffset CreationDateTime { get; set; }
 }

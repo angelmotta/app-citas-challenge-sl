@@ -5,24 +5,26 @@ namespace Citas_API.Mappers;
 
 public static class AppointmentsMapper
 {
-    public static Appointment ToEntity(this RequestAppointmentDTO reqAppointment, int speciltyId) {
+    public static Appointment ToEntity(this RequestAppointmentDTO reqAppointment, Specialty specialty) {
         Appointment newAppointment = new () {
                 DocIdType = reqAppointment.DocIdType,
                 NumDocId = reqAppointment.NumDocId,
                 FullName = reqAppointment.FullName,
-                SpecialtyId = speciltyId,
+                SpecialtyId = specialty.Id,
+                SpecialtyAppointment = specialty,
                 CreationDateTime = DateTimeOffset.Now
         };
 
         return newAppointment;
     }
 
-    public static CreatedAppointmentDTO ToDTO(this Appointment newAppointment, string specialtyName) {
-        CreatedAppointmentDTO createdAppointmentResponse = new (
+    public static AppointmentDTO ToDTO(this Appointment newAppointment) {
+        AppointmentDTO createdAppointmentResponse = new (
                 newAppointment.DocIdType,
                 newAppointment.NumDocId,
                 newAppointment.FullName,
-                specialtyName,
+                newAppointment.SpecialtyId,
+                newAppointment.SpecialtyAppointment.Name,
                 newAppointment.CreationDateTime
         );
 

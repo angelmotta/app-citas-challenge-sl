@@ -4,6 +4,7 @@ public record class AppointmentDTO(
     string DocIdType,
     string NumDocId,
     string FullName,
-    string Specialty,
+    int SpecialtyId,
+    string SpecialtyName,
     DateTimeOffset CreationDateTime
 );
