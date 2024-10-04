@@ -14,23 +14,23 @@ public static class AppointmentsEndpoints
         
         var routerGroup = app.MapGroup("/citas").WithParameterValidation();
 
-        routerGroup.MapGet("/", (AppStoreContext dbContext) => {
+        routerGroup.MapGet("/", async (AppStoreContext dbContext) => {
             // return listRequestsAppointment;
-            var listAppointments = dbContext.Appointments
+            var listAppointments = await dbContext.Appointments
                                         .Include(appointment => appointment.SpecialtyAppointment)
                                         .Select(appointment => appointment.ToDTO())
                                         .AsNoTracking()
-                                        .ToList();
+                                        .ToListAsync();
 
             return Results.Ok(listAppointments);
         });
 
-        routerGroup.MapGet("/{id}", (int id, AppStoreContext dbContext) => {
+        routerGroup.MapGet("/{id}", async (int id, AppStoreContext dbContext) => {
             if (id < 0) return Results.NotFound();
             
-            Appointment? appointment = dbContext.Appointments
+            Appointment? appointment = await dbContext.Appointments
                                         .Include(appointment => appointment.SpecialtyAppointment)
-                                        .FirstOrDefault(appointment => appointment.Id == id);
+                                        .FirstOrDefaultAsync(appointment => appointment.Id == id);
                                                 
             if (appointment == null) return Results.NotFound(); 
 
@@ -39,30 +39,30 @@ public static class AppointmentsEndpoints
             return Results.Ok(responseAppointment);
         }).WithName(GetInfoCitaEndpoint);
 
-        routerGroup.MapPost("/", (RequestAppointmentDTO reqAppointment, AppStoreContext dbContext) => {
-            Specialty? specialtyRequested = dbContext.Specialties.Find(reqAppointment.SpecialtyId);
+        routerGroup.MapPost("/", async (RequestAppointmentDTO reqAppointment, AppStoreContext dbContext) => {
+            Specialty? specialtyRequested = await dbContext.Specialties.FindAsync(reqAppointment.SpecialtyId);
             if (specialtyRequested == null) return Results.BadRequest("Specialty not found");
 
             Appointment newAppointment = reqAppointment.ToEntity(specialtyRequested);
             
             dbContext.Appointments.Add(newAppointment);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             AppointmentDTO createdAppointmentResponse = newAppointment.ToDTO();
 
             return Results.CreatedAtRoute(GetInfoCitaEndpoint, new {id = newAppointment}, createdAppointmentResponse);
         });
 
-        routerGroup.MapPut("/{id}", (int id, RequestUpdateAppointmentDTO reqUpdateAppointment, AppStoreContext dbContext) => {
+        routerGroup.MapPut("/{id}", async (int id, RequestUpdateAppointmentDTO reqUpdateAppointment, AppStoreContext dbContext) => {
             // Check if appointment exists
-            Appointment? existingAppointment = dbContext.Appointments
+            Appointment? existingAppointment = await dbContext.Appointments
                                         .Include(appointment => appointment.SpecialtyAppointment)
-                                        .FirstOrDefault(appointment => appointment.Id == id);
+                                        .FirstOrDefaultAsync(appointment => appointment.Id == id);
 
             if (existingAppointment == null) return Results.NotFound(); // HTTP 404
 
             // Validate if `specialty` requested is valid
-            Specialty? specialtyRequested = dbContext.Specialties.Find(reqUpdateAppointment.SpecialtyId);
+            Specialty? specialtyRequested = await dbContext.Specialties.FindAsync(reqUpdateAppointment.SpecialtyId);
             if (specialtyRequested == null) return Results.BadRequest("Specialty not found");
             
             // Prepare entity
@@ -70,15 +70,15 @@ public static class AppointmentsEndpoints
 
             // Update entity in DB
             dbContext.Entry(existingAppointment).CurrentValues.SetValues(updatedAppointment);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             
             return Results.NoContent(); // HTTP 204 
         });
 
-        routerGroup.MapDelete("/{id}", (int id, AppStoreContext dbContext) => {
-            var numDeletedRows = dbContext.Appointments
+        routerGroup.MapDelete("/{id}", async (int id, AppStoreContext dbContext) => {
+            var numDeletedRows = await dbContext.Appointments
                                         .Where(appointment => appointment.Id == id)
-                                        .ExecuteDelete();
+                                        .ExecuteDeleteAsync();
 
             if (numDeletedRows == 0) return Results.NotFound();
 
