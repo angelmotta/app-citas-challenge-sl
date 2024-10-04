@@ -20,6 +20,7 @@ public static class AppointmentsMapper
 
     public static AppointmentDTO ToDTO(this Appointment newAppointment) {
         AppointmentDTO createdAppointmentResponse = new (
+                newAppointment.Id,
                 newAppointment.DocIdType,
                 newAppointment.NumDocId,
                 newAppointment.FullName,
@@ -29,5 +30,19 @@ public static class AppointmentsMapper
         );
 
         return createdAppointmentResponse;
+    }
+
+    public static Appointment ToEntity(this RequestUpdateAppointmentDTO reqUpdateAppointment, int id, Specialty specialty) {
+        Appointment updatedAppointment = new () {
+                Id = id,
+                DocIdType = reqUpdateAppointment.DocIdType,
+                NumDocId = reqUpdateAppointment.NumDocId,
+                FullName = reqUpdateAppointment.FullName,
+                SpecialtyId = specialty.Id,
+                SpecialtyAppointment = specialty,
+                CreationDateTime = DateTimeOffset.Now
+        };
+
+        return updatedAppointment;
     }
 }

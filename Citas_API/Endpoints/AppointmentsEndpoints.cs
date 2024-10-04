@@ -9,12 +9,7 @@ namespace Citas_API.Endpoints;
 public static class AppointmentsEndpoints
 {   
     const string GetInfoCitaEndpoint = "GetInfoCita";
-    // static List<AppointmentDTO> listRequestsAppointment = [
-    //     new ("DNI", "42685987", "Angel Motta", "Cardiología", DateTimeOffset.Parse("2024-10-01 15:30:00 -05:00")),
-    //     new ("DNI", "42685987", "Angel Motta", "General", DateTimeOffset.Parse("2024-10-02 14:30:00 -05:00")),
-    //     new ("DNI", "62685123", "Mayra Chávez", "General", DateTimeOffset.Parse("2024-10-02 16:30:00 -05:00")),
-    // ];
-
+    
     public static RouteGroupBuilder MapAppointmentsEndpoints(this WebApplication app) {
         
         var routerGroup = app.MapGroup("/citas").WithParameterValidation();
@@ -46,10 +41,7 @@ public static class AppointmentsEndpoints
 
         routerGroup.MapPost("/", (RequestAppointmentDTO reqAppointment, AppStoreContext dbContext) => {
             Specialty? specialtyRequested = dbContext.Specialties.Find(reqAppointment.SpecialtyId);
-            if (specialtyRequested == null)
-            {
-                return Results.BadRequest("Specialty not found");
-            }
+            if (specialtyRequested == null) return Results.BadRequest("Specialty not found");
 
             Appointment newAppointment = reqAppointment.ToEntity(specialtyRequested);
             
@@ -61,35 +53,36 @@ public static class AppointmentsEndpoints
             return Results.CreatedAtRoute(GetInfoCitaEndpoint, new {id = newAppointment}, createdAppointmentResponse);
         });
 
-        routerGroup.MapPut("/{id}", (int id, RequestUpdateAppointmentDTO reqUpdateAppointment) => {
-            // int lenList = listRequestsAppointment.Count;
-            // if (id > lenList - 1) {
-            //     return Results.NotFound();
-            // }
+        routerGroup.MapPut("/{id}", (int id, RequestUpdateAppointmentDTO reqUpdateAppointment, AppStoreContext dbContext) => {
+            // Check if appointment exists
+            Appointment? existingAppointment = dbContext.Appointments
+                                        .Include(appointment => appointment.SpecialtyAppointment)
+                                        .FirstOrDefault(appointment => appointment.Id == id);
 
-            // AppointmentDTO updatedAppointment = new AppointmentDTO(
-            //     reqUpdateAppointment.DocIdType,
-            //     reqUpdateAppointment.NumDocId,
-            //     reqUpdateAppointment.FullName,
-            //     reqUpdateAppointment.Specialty,
-            //     DateTimeOffset.Now
-            // );
+            if (existingAppointment == null) return Results.NotFound(); // HTTP 404
 
-            // // Update appointment
-            // listRequestsAppointment[id] = updatedAppointment;
+            // Validate if `specialty` requested is valid
+            Specialty? specialtyRequested = dbContext.Specialties.Find(reqUpdateAppointment.SpecialtyId);
+            if (specialtyRequested == null) return Results.BadRequest("Specialty not found");
+            
+            // Prepare entity
+            Appointment updatedAppointment = reqUpdateAppointment.ToEntity(id, specialtyRequested);
 
-            return Results.NoContent();
+            // Update entity in DB
+            dbContext.Entry(existingAppointment).CurrentValues.SetValues(updatedAppointment);
+            dbContext.SaveChanges();
+            
+            return Results.NoContent(); // HTTP 204 
         });
 
-        routerGroup.MapDelete("/{id}", (int id) => {
-            // int lenList = listRequestsAppointment.Count;
-            // if (id > lenList - 1) {
-            //     return Results.NotFound();
-            // }
+        routerGroup.MapDelete("/{id}", (int id, AppStoreContext dbContext) => {
+            var numDeletedRows = dbContext.Appointments
+                                        .Where(appointment => appointment.Id == id)
+                                        .ExecuteDelete();
 
-            // listRequestsAppointment.RemoveAt(id);
+            if (numDeletedRows == 0) return Results.NotFound();
 
-            return Results.NoContent();
+            return Results.NoContent(); // HTTP 204 
         });
 
 
