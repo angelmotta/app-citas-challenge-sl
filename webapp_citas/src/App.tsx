@@ -6,7 +6,7 @@ function App() {
     const [citas, setCitas] = useState([]);
 
     useEffect(() => {
-        console.log(`called useEffect`);
+        console.log(`called useEffect: get citas`);
 
         fetchCitas();
     }, []);
@@ -31,7 +31,7 @@ function App() {
         <>
             <div>
                 <h1>Registro citas</h1>
-                {/* <RequestCitaForm fetchCitas={fetchCitas} /> */}
+                <RequestCitaForm fetchCitas={fetchCitas} />
             </div>
             <div className="container-list-citas">
                 <h2>Lista de citas</h2>

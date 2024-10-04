@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 class ApiError extends Error {
     code: number;
     constructor(message: string, code: number) {
@@ -9,11 +9,34 @@ class ApiError extends Error {
 
 const RequestCitaForm = (props: any) => {
     const { fetchCitas } = props;
+    const [especialidades, setEspecialidades] = useState([]);
     const REST_API_CITAS = "http://localhost:5118/citas";
+    const REST_API_ESPECIALIDADES = "http://localhost:5118/especialidades";
     const [tipoDocumento, setTipoDocumento] = useState("DNI");
     const [numDocumento, setNumDocumento] = useState("");
     const [nombreCompleto, setNombreCompleto] = useState("");
     const [especialidad, setEspecialidad] = useState("medicina general");
+
+    useEffect(() => {
+        console.log(`called useEffect RequestCitaForm: get especialidades`);
+
+        fetchEspecialidades();
+    }, []);
+
+    const fetchEspecialidades = async () => {
+        console.log(`Fetching especialidades...`);
+        const response = await fetch(REST_API_ESPECIALIDADES);
+        // check if response is 200
+        if (!response.ok) {
+            // handle error
+            console.error("Error fetching especialidades");
+            alert("Servicio Citas no disponible (Especialidades)");
+            return;
+        }
+        const data = await response.json();
+        console.log(data);
+        setEspecialidades(data);
+    };
 
     const handleSelectTipoDocumento = (
         e: React.ChangeEvent<HTMLSelectElement>
@@ -57,11 +80,10 @@ const RequestCitaForm = (props: any) => {
         // Save a reference to the form element before execute http request in async function
         const formReference = e.currentTarget;
         const requestCita = {
-            tipoDocumento,
-            numDocumento,
-            nombreCompleto,
-            especialidad,
-            fechaHora: new Date().toISOString(),
+            docIdType: tipoDocumento,
+            numDocId: numDocumento,
+            fullName: nombreCompleto,
+            specialtyId: especialidad,
         };
         console.log(`Request cita:`);
         console.log(requestCita);
@@ -136,11 +158,19 @@ const RequestCitaForm = (props: any) => {
                         value={especialidad}
                         onChange={handleOnChangeEspecialidad}
                     >
-                        <option value="medicina general">
+                        {/* <option value="medicina general">
                             Medicina general
                         </option>
                         <option value="pediatría">Pediatría</option>
-                        <option value="cardiología">Cardiología</option>
+                        <option value="cardiología">Cardiología</option> */}
+                        {especialidades.map((especialidad: any) => (
+                            <option
+                                key={especialidad.id}
+                                value={especialidad.id}
+                            >
+                                {especialidad.name}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <div>
