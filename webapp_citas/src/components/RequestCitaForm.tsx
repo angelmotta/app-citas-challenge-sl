@@ -9,7 +9,7 @@ class ApiError extends Error {
 
 const RequestCitaForm = (props: any) => {
     const { fetchCitas } = props;
-    const REST_API_CITAS = "http://localhost:3000/citas";
+    const REST_API_CITAS = "http://localhost:5118/citas";
     const [tipoDocumento, setTipoDocumento] = useState("DNI");
     const [numDocumento, setNumDocumento] = useState("");
     const [nombreCompleto, setNombreCompleto] = useState("");

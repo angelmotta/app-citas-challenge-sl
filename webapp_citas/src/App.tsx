@@ -6,12 +6,14 @@ function App() {
     const [citas, setCitas] = useState([]);
 
     useEffect(() => {
+        console.log(`called useEffect`);
+
         fetchCitas();
     }, []);
 
     const fetchCitas = async () => {
         console.log(`Fetching citas...`);
-        const REST_API_CITAS = "http://localhost:3000/citas";
+        const REST_API_CITAS = "http://localhost:5118/citas";
         const response = await fetch(REST_API_CITAS);
         // check if response is 200
         if (!response.ok) {
@@ -29,7 +31,7 @@ function App() {
         <>
             <div>
                 <h1>Registro citas</h1>
-                <RequestCitaForm fetchCitas={fetchCitas} />
+                {/* <RequestCitaForm fetchCitas={fetchCitas} /> */}
             </div>
             <div className="container-list-citas">
                 <h2>Lista de citas</h2>
@@ -40,20 +42,24 @@ function App() {
                             <th>Tipo Documento</th>
                             <th>Numero Documento</th>
                             <th>Especialidad</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
+                            <th>Fecha Registrada</th>
+                            <th>Hora Registrada</th>
                         </tr>
                     </thead>
                     <tbody>
                         {citas.map((cita: any) => (
                             <tr key={cita.id}>
-                                <td>{cita.nombreCompleto}</td>
-                                <td>{cita.tipoDocumento}</td>
-                                <td>{cita.numDocumento}</td>
-                                <td>{cita.especialidad}</td>
-                                <td>{cita.fechaHora.split("T")[0]}</td>
+                                <td>{cita.fullName}</td>
+                                <td>{cita.docIdType}</td>
+                                <td>{cita.numDocId}</td>
+                                <td>{cita.specialtyName}</td>
+                                <td>{cita.creationDateTime.split("T")[0]}</td>
                                 <td>
-                                    {cita.fechaHora.split("T")[1].split(".")[0]}
+                                    {
+                                        cita.creationDateTime
+                                            .split("T")[1]
+                                            .split(".")[0]
+                                    }
                                 </td>
                             </tr>
                         ))}
